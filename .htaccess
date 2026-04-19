@@ -1,0 +1,10 @@
+# Minimal Root .htaccess
+RewriteEngine On
+
+# If it's the root directory, go to public/index.php
+RewriteRule ^$ public/index.php [L]
+
+# For anything else, if it's not a real file/folder, try to find it in public/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L]

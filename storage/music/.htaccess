@@ -1,0 +1,5 @@
+# Block ALL direct access to uploaded music files
+# Downloads must go through download.php
+
+Order Deny,Allow
+Deny from all
