@@ -1,0 +1,46 @@
+# BeatWave — Root .htaccess
+
+# ── Redirect to public/ ───────────────────────────────────────────────────────
+RewriteEngine On
+RewriteRule ^$ public/index.php [L]
+RewriteRule ^public/(.*)$ public/$1 [L]
+
+# ── Block access to sensitive directories ────────────────────────────────────
+RedirectMatch 403 ^/config/.*$
+RedirectMatch 403 ^/app/.*$
+RedirectMatch 403 ^/storage/.*$
+RedirectMatch 403 ^/routes/.*$
+RedirectMatch 403 ^/vendor/.*$
+
+# ── Block .git, .env, dot files ───────────────────────────────────────────────
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# ── Prevent directory listing ─────────────────────────────────────────────────
+Options -Indexes
+
+# ── Security headers ──────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ── Gzip compression ──────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript
+</IfModule>
+
+# ── Browser caching for assets ────────────────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css             "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/jpeg           "access plus 6 months"
+    ExpiresByType image/png            "access plus 6 months"
+    ExpiresByType image/webp           "access plus 6 months"
+</IfModule>

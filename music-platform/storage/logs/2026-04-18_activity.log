@@ -1,0 +1,22 @@
+{"time":"2026-04-18 07:34:02","type":"email","message":"Failed","context":{"to":"alonzyraphael@gmail.com","subject":"Welcome to BeatWave \ud83c\udfb5"},"ip":"::1"}
+{"time":"2026-04-18 07:34:04","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"New Artist Registration: Raphael Qweccu"},"ip":"::1"}
+{"time":"2026-04-18 08:00:19","type":"email","message":"Failed","context":{"to":"nseaseng.raphael@st.vvu.edu.gh","subject":"\u2705 \"kakali\" is now live!"},"ip":"::1"}
+{"time":"2026-04-18 08:00:24","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 09:17:11","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 09:17:22","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 09:47:37","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 09:47:40","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 10:15:30","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 10:15:31","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 10:15:46","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 10:15:47","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 10:37:40","type":"email","message":"Failed","context":{"to":"nseaseng.raphael@st.vvu.edu.gh","subject":"\ud83d\udcb0 Your March 2026 Earnings: GHS 10.55"},"ip":"::1"}
+{"time":"2026-04-18 10:37:44","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"Invalid key","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 10:37:44","type":"earnings_report","message":"Sent monthly report to Raphael Qweccu","context":{"artist_id":1,"amount":10.55},"ip":"::1"}
+{"time":"2026-04-18 12:19:18","type":"email","message":"Failed","context":{"to":"nseaseng.raphael@st.vvu.edu.gh","subject":"Payout Approved \u2014 GHS 4.00"},"ip":"::1"}
+{"time":"2026-04-18 12:19:23","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 12:19:33","type":"email","message":"Failed","context":{"to":"nseaseng.raphael@st.vvu.edu.gh","subject":"Payout Paid \u2014 GHS 4.00"},"ip":"::1"}
+{"time":"2026-04-18 12:19:34","type":"sms","message":"Arkesel failed","context":{"phone":"233548817158","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 12:22:43","type":"email","message":"Failed","context":{"to":"alonzyraphael@icloud.com","subject":"Welcome to BeatWave \ud83c\udfb5"},"ip":"::1"}
+{"time":"2026-04-18 12:22:45","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-18 12:22:47","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"New Artist Registration: Alonzy"},"ip":"::1"}

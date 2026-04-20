@@ -1,0 +1,17 @@
+# Block direct access to logs
+<FilesMatch "\.log$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Allow access to music, covers, and photos
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes

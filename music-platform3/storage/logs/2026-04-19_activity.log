@@ -1,0 +1,28 @@
+{"time":"2026-04-19 19:43:21","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"\u2b06\ufe0f New Song Upload: kkk"},"ip":"::1"}
+{"time":"2026-04-19 19:44:02","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"\u2b06\ufe0f New Song Upload: yyy"},"ip":"::1"}
+{"time":"2026-04-19 21:38:48","type":"email","message":"Failed","context":{"to":"alonzyraphael@icloud.com","subject":"\u2705 \"yyy\" is now live!"},"ip":"::1"}
+{"time":"2026-04-19 21:38:58","type":"sms_error","message":"Arkesel cURL error","context":{"error":"Operation timed out after 10009 milliseconds with 0 bytes received","phone":"233249740636"},"ip":"::1"}
+{"time":"2026-04-19 21:39:10","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-19 21:39:15","type":"email","message":"Failed","context":{"to":"alonzyraphael@icloud.com","subject":"\u2705 \"kkk\" is now live!"},"ip":"::1"}
+{"time":"2026-04-19 21:39:16","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-19 21:39:37","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-19 21:42:28","type":"debug","message":"Starting download for song: kkk (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530571ca32_black-sherif-kilos-milos-halmblog.com_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:42:33","type":"debug","message":"Starting download for song: kkk (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530571ca32_black-sherif-kilos-milos-halmblog.com_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:43:12","type":"debug","message":"Starting download for song: kkk (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530571ca32_black-sherif-kilos-milos-halmblog.com_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:53:17","type":"email","message":"Failed","context":{"to":"alonzy@gmail.com","subject":"Welcome to BeatWave \ud83c\udfb5"},"ip":"::1"}
+{"time":"2026-04-19 21:53:23","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-19 21:53:25","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"New Artist Registration: kofi"},"ip":"::1"}
+{"time":"2026-04-19 21:54:31","type":"email","message":"Failed","context":{"to":"kwaku@gmail.com","subject":"Welcome to BeatWave \ud83c\udfb5"},"ip":"::1"}
+{"time":"2026-04-19 21:54:34","type":"sms","message":"Arkesel failed","context":{"phone":"233249740636","resp":{"message":"You are not allowed to use this Sender ID. Please contact Support.","status":"error"}},"ip":"::1"}
+{"time":"2026-04-19 21:54:36","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"New Artist Registration: GATUSSO"},"ip":"::1"}
+{"time":"2026-04-19 21:55:45","type":"email","message":"Failed","context":{"to":"admin@yourdomain.com","subject":"\u2b06\ufe0f New Song Upload: yawa"},"ip":"::1"}
+{"time":"2026-04-19 21:57:59","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:03","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:07","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:11","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:15","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:19","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:23","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:26","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 21:58:30","type":"debug","message":"Starting download for song: kakali (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530804f719_kakali_beatwave__3_.mp3)","context":[],"ip":"::1"}
+{"time":"2026-04-19 22:03:56","type":"debug","message":"Starting download for song: kkk (C:\\xampp\\htdocs\\music-platform3\/storage\/music\/song_69e530571ca32_black-sherif-kilos-milos-halmblog.com_.mp3)","context":[],"ip":"::1"}
