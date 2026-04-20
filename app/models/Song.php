@@ -12,50 +12,47 @@ class Song {
 
     public function getAll(int $page = 1, int $limit = 20, string $search = '', string $genre = ''): array {
         $offset = ($page - 1) * $limit;
-        $where  = ['s.status = "approved"'];
-        $params = [];
-
-        if ($search) {
-            $where[]           = '(s.title LIKE :search OR a.name LIKE :search)';
-            $params[':search'] = "%{$search}%";
-        }
-        if ($genre) {
-            $where[]          = 's.genre = :genre';
-            $params[':genre'] = $genre;
-        }
-
+        
         $sql = "SELECT s.*, a.name AS artist_name, a.photo AS artist_photo
-                FROM songs s
-                JOIN artists a ON s.artist_id = a.id
-                WHERE " . implode(' AND ', $where) . "
-                ORDER BY s.created_at DESC
-                LIMIT :limit OFFSET :offset";
-
+                FROM songs s JOIN artists a ON s.artist_id = a.id
+                WHERE s.status = 'approved'";
+        $params = [];
+        
+        if ($search !== '') {
+            $sql .= " AND (s.title LIKE ? OR a.name LIKE ?)";
+            $params[] = "%{$search}%";
+            $params[] = "%{$search}%";
+        }
+        if ($genre !== '') {
+            $sql .= " AND s.genre = ?";
+            $params[] = $genre;
+        }
+        
+        $sql .= " ORDER BY s.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        
         $stmt = $this->db->prepare($sql);
-        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
-        $stmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function countAll(string $search = '', string $genre = ''): int {
-        $where  = ['s.status = "approved"'];
+        $sql = "SELECT COUNT(*) FROM songs s JOIN artists a ON s.artist_id = a.id WHERE s.status = 'approved'";
         $params = [];
-
-        if ($search) {
-            $where[]           = '(s.title LIKE :search OR a.name LIKE :search)';
-            $params[':search'] = "%{$search}%";
+        
+        if ($search !== '') {
+            $sql .= " AND (s.title LIKE ? OR a.name LIKE ?)";
+            $params[] = "%{$search}%";
+            $params[] = "%{$search}%";
         }
-        if ($genre) {
-            $where[]          = 's.genre = :genre';
-            $params[':genre'] = $genre;
+        if ($genre !== '') {
+            $sql .= " AND s.genre = ?";
+            $params[] = $genre;
         }
-
-        $sql  = "SELECT COUNT(*) FROM songs s JOIN artists a ON s.artist_id = a.id WHERE " . implode(' AND ', $where);
+        
         $stmt = $this->db->prepare($sql);
-        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
-        $stmt->execute();
+        $stmt->execute($params);
         return (int) $stmt->fetchColumn();
     }
 
@@ -66,7 +63,7 @@ class Song {
              WHERE s.id = ? AND s.status = 'approved'"
         );
         $stmt->execute([$id]);
-        return $stmt->fetch() ?: null;
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     public function getByArtist(int $artistId): array {
@@ -74,7 +71,7 @@ class Song {
             "SELECT * FROM songs WHERE artist_id = ? ORDER BY created_at DESC"
         );
         $stmt->execute([$artistId]);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getFeatured(int $limit = 6): array {
@@ -85,7 +82,7 @@ class Song {
         );
         $stmt->bindValue(1, $limit, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getTrending(int $limit = 10): array {
@@ -96,7 +93,7 @@ class Song {
         );
         $stmt->bindValue(1, $limit, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create(array $data): int {
@@ -124,20 +121,23 @@ class Song {
     }
 
     public function getAllAdmin(string $status = ''): array {
-        $where  = $status ? "WHERE s.status = :status" : '';
-        $params = $status ? [':status' => $status] : [];
-        $stmt   = $this->db->prepare(
-            "SELECT s.*, a.name AS artist_name FROM songs s JOIN artists a ON s.artist_id = a.id
-             {$where} ORDER BY s.created_at DESC"
-        );
+        $sql = "SELECT s.*, a.name AS artist_name FROM songs s JOIN artists a ON s.artist_id = a.id";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE s.status = ?";
+            $params[] = $status;
+        }
+        $sql .= " ORDER BY s.created_at DESC";
+        
+        $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function delete(int $id): bool {
-        $song = $this->db->prepare("SELECT file_path, cover_art FROM songs WHERE id = ?");
-        $song->execute([$id]);
-        $row = $song->fetch();
+        $songStmt = $this->db->prepare("SELECT file_path, cover_art FROM songs WHERE id = ?");
+        $songStmt->execute([$id]);
+        $row = $songStmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             @unlink(STORAGE_PATH . $row['file_path']);
             if ($row['cover_art']) @unlink(dirname(STORAGE_PATH) . '/covers/' . $row['cover_art']);
@@ -146,3 +146,4 @@ class Song {
         return $stmt->execute([$id]);
     }
 }
+

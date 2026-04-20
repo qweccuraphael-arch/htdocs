@@ -9,7 +9,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--black);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}img{display:block;max-width:100%}button{cursor:pointer;font-family:inherit}
 .container{max-width:1200px;margin:0 auto;padding:0 20px}
 
@@ -56,6 +56,9 @@ a{color:inherit;text-decoration:none}img{display:block;max-width:100%}button{cur
 .play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--transition)}
 .cover-wrap:hover .play-overlay{opacity:1}
 .btn-play{width:44px;height:44px;background:var(--gold);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;text-indent:2px}
+.btn-play-mini,.btn-play-global{font-size:18px;color:var(--gold);background:none;border:none;cursor:pointer;padding:4px;transition:color var(--transition)}
+.btn-play-mini:hover,.btn-play-global:hover{color:var(--gold-light)}
+.btn-play-mini.active,.btn-play-global.active{color:#4caf50;animation:pulse 1s infinite}
 .song-info{padding:12px}
 .song-title{display:block;font-family:var(--font-head);font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
 .song-title:hover{color:var(--gold)}

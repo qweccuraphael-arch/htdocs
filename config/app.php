@@ -16,11 +16,15 @@ define('SESSION_LIFETIME', 3600); // 1 hour
 define('SONGS_PER_PAGE', 20);
 
 // Download earnings (per download in GHS)
-define('EARNINGS_PER_DOWNLOAD', 0.05);
+define('DOWNLOAD_REVENUE_TOTAL', 2.00);
+define('ARTIST_EARNINGS_PER_DOWNLOAD', 1.50);
+define('EARNINGS_PER_DOWNLOAD', ARTIST_EARNINGS_PER_DOWNLOAD);
+define('ADMIN_EARNINGS_PER_DOWNLOAD', DOWNLOAD_REVENUE_TOTAL - ARTIST_EARNINGS_PER_DOWNLOAD);
 
 // ── EMAIL (SMTP via PHPMailer or mail()) ──────────────────────────────────────
 define('MAIL_FROM',       'noreply@yourdomain.com');
 define('MAIL_FROM_NAME',  APP_NAME);
+define('ADMIN_ALERT_EMAIL', 'admin@yourdomain.com');
 define('SMTP_HOST',       'smtp.gmail.com');
 define('SMTP_PORT',       587);
 define('SMTP_USER',       'your@gmail.com');
@@ -31,6 +35,7 @@ define('SMTP_ENCRYPTION', 'tls');
 define('SMS_PROVIDER',    'arkesel');   // 'arkesel' | 'mnotify' | 'twilio'
 define('SMS_API_KEY',     'UkdzQXl1QW5sTHRteUtkYUpZblA');
 define('SMS_SENDER_ID',   'BeatWave'); // max 11 chars
+define('ADMIN_ALERT_PHONE', '233249740636');
 
 // ── Arkesel endpoint ──────────────────────────────────────────────────────────
 define('ARKESEL_SMS_URL', 'https://sms.arkesel.com/api/v2/sms/send');

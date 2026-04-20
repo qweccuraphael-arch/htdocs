@@ -2,6 +2,9 @@
 // app/helpers/auth.php
 
 require_once dirname(__DIR__, 2) . '/config/app.php';
+require_once dirname(__DIR__, 2) . '/config/db.php';
+require_once __DIR__ . '/functions.php';  // For sendEmail()
+require_once __DIR__ . '/security.php';   // For sanitize(), rateLimitCheck()
 
 function startSession() {
     if (session_status() === PHP_SESSION_NONE) {
@@ -83,3 +86,118 @@ function currentArtistName(): string {
     startSession();
     return $_SESSION['artist_name'] ?? '';
 }
+
+// ── Admin Password Reset ─────────────────────────────────────────────────────
+function adminSendResetEmail(string $identifier): bool {
+    $db = getDB();
+    $ip = getClientIP();
+    if (!rateLimitCheck('admin_reset_' . $ip, 3, 3600)) return false;
+    
+    $sql = "SELECT id, username, email FROM admins WHERE email = ? OR username = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([sanitize($identifier), sanitize($identifier)]);
+    $admin = $stmt->fetch();
+    
+    if (!$admin) return false;
+    
+    $stmt = $db->prepare("DELETE FROM admin_reset_tokens WHERE admin_id = ?");
+    $stmt->execute([$admin['id']]);
+    
+    $token = bin2hex(random_bytes(32));
+    $expires = date('Y-m-d H:i:s', time() + 3600);
+    
+    $stmt = $db->prepare("INSERT INTO admin_reset_tokens (admin_id, token, expires_at) VALUES (?, ?, ?)");
+    if (!$stmt->execute([$admin['id'], $token, $expires])) return false;
+    
+    $resetUrl = APP_URL . '/admin/reset-password.php?token=' . $token;
+    $content = emailTemplate('Reset Your Password 🔐',
+        "<p>We received a request to reset your BeatWave Admin password.</p>
+         <p><strong>This link expires in 1 hour</strong> and can only be used once.</p>
+         <p style='text-align:center;margin:30px 0'>
+           <a href='{$resetUrl}' class='btn' style='font-size:18px;padding:15px 40px'>Reset Password</a>
+         </p>
+         <p>If you didn't request this, please ignore this email.</p>"
+    );
+    
+    return sendEmail($admin['email'], 'Reset Your BeatWave Admin Password', $content);
+}
+
+function adminValidateResetToken(string $token): ?array {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT art.*, a.username, a.email 
+                          FROM admin_reset_tokens art 
+                          JOIN admins a ON art.admin_id = a.id 
+                          WHERE art.token = ? AND art.expires_at > NOW() AND art.used_at IS NULL");
+    $stmt->execute([$token]);
+    return $stmt->fetch();
+}
+
+function adminResetPassword(int $adminId, string $newPassword): bool {
+    $db = getDB();
+    $hashed = password_hash($newPassword, PASSWORD_BCRYPT);
+    $stmt = $db->prepare("UPDATE admins SET password = ? WHERE id = ?");
+    $updated = $stmt->execute([$hashed, $adminId]);
+    if ($updated) {
+        $stmt = $db->prepare("UPDATE admin_reset_tokens SET used_at = NOW() WHERE admin_id = ? AND used_at IS NULL");
+        $stmt->execute([$adminId]);
+    }
+    return $updated;
+}
+
+// ── Artist Password Reset ─────────────────────────────────────────────────────
+function artistSendResetEmail(string $identifier): bool {
+    $db = getDB();
+    $ip = getClientIP();
+    if (!rateLimitCheck('artist_reset_' . $ip, 3, 3600)) return false;
+    
+    $sql = "SELECT id, name, email FROM artists WHERE email = ? AND status = 'active'";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([sanitize($identifier)]);
+    $artist = $stmt->fetch();
+    
+    if (!$artist) return false;
+    
+    $stmt = $db->prepare("DELETE FROM artist_reset_tokens WHERE artist_id = ?");
+    $stmt->execute([$artist['id']]);
+    
+    $token = bin2hex(random_bytes(32));
+    $expires = date('Y-m-d H:i:s', time() + 3600);
+    
+    $stmt = $db->prepare("INSERT INTO artist_reset_tokens (artist_id, token, expires_at) VALUES (?, ?, ?)");
+    if (!$stmt->execute([$artist['id'], $token, $expires])) return false;
+    
+    $resetUrl = APP_URL . '/artist/reset-password.php?token=' . $token;
+    $content = emailTemplate('Reset Your Password 🔐',
+        "<p>We received a request to reset your BeatWave Artist password.</p>
+         <p><strong>This link expires in 1 hour</strong> and can only be used once.</p>
+         <p style='text-align:center;margin:30px 0'>
+           <a href='{$resetUrl}' class='btn' style='font-size:18px;padding:15px 40px'>Reset Password</a>
+         </p>
+         <p>If you didn't request this, please ignore this email.</p>"
+    );
+    
+    return sendEmail($artist['email'], 'Reset Your BeatWave Artist Password', $content);
+}
+
+function artistValidateResetToken(string $token): ?array {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT art.*, a.name, a.email 
+                          FROM artist_reset_tokens art 
+                          JOIN artists a ON art.artist_id = a.id 
+                          WHERE art.token = ? AND art.expires_at > NOW() AND art.used_at IS NULL AND a.status = 'active'");
+    $stmt->execute([$token]);
+    return $stmt->fetch();
+}
+
+function artistResetPassword(int $artistId, string $newPassword): bool {
+    require_once __DIR__ . '/models/Artist.php';
+    $artistModel = new Artist();
+    $updated = $artistModel->updatePassword($artistId, $newPassword);
+    if ($updated) {
+        $db = getDB();
+        $stmt = $db->prepare("UPDATE artist_reset_tokens SET used_at = NOW() WHERE artist_id = ? AND used_at IS NULL");
+        $stmt->execute([$artistId]);
+    }
+    return $updated;
+}
+
