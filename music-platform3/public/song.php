@@ -63,8 +63,8 @@ if (!$song) {
       <?php endif; ?>
 
       <div class="audio-player-wrap" style="margin: 20px 0;">
-        <audio controls controlsList="nodownload" style="width: 100%; border-radius: 8px; background: #f1f3f4;">
-          <source src="../storage/music/<?= htmlspecialchars($song['file_path']) ?>" type="audio/mpeg">
+        <audio controls controlsList="nodownload" style="width: 100%; height: 56px; border-radius: 12px;">
+          <source src="stream.php?id=<?= $song['id'] ?>" type="audio/mpeg">
           Your browser does not support the audio element.
         </audio>
       </div>

@@ -80,7 +80,7 @@ $featured = $songModel->getFeatured(6);
               <div class="cover-placeholder">🎵</div>
             <?php endif; ?>
             <div class="play-overlay">
-              <a href="song.php?id=<?= $song['id'] ?>" class="btn-play">▶</a>
+              <button class="btn-play-global" data-song-id="<?= $song['id'] ?>" data-src="stream.php?id=<?= $song['id'] ?>">▶</button>
             </div>
           </div>
           <div class="song-info">
@@ -131,7 +131,8 @@ $featured = $songModel->getFeatured(6);
             <span class="row-genre"><?= htmlspecialchars($song['genre']) ?></span>
             <span class="row-downloads">⬇ <?= formatNumber($song['download_count']) ?></span>
             <div class="row-actions">
-              <a href="song.php?id=<?= $song['id'] ?>" class="btn-listen" style="margin-right:8px; color:var(--primary); text-decoration:none; font-weight:500;">▶ Listen</a>
+              <button class="btn-play-mini" data-song-id="<?= $song['id'] ?>" data-src="stream.php?id=<?= $song['id'] ?>" style="background:none;border:none;color:var(--gold);font-size:18px;cursor:pointer;padding:0 8px;">▶</button>
+              <a href="song.php?id=<?= $song['id'] ?>" class="btn-listen" style="margin-left:4px;color:var(--text-dim);text-decoration:none;font-weight:500;font-size:14px;">Preview</a>
               <a href="ad_download.php?id=<?= $song['id'] ?>" class="btn-download">Download</a>
             </div>
           </div>

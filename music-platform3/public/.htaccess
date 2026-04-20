@@ -1,0 +1,30 @@
+# Remove problematic storage protection for public/ (storage is outside)
+
+# Allow PHP scripts (stream.php etc)
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Prevent direct MP3/WAV access (force through stream.php)
+<FilesMatch "\.(mp3|wav|flac|aac|m4a)$">
+    RewriteEngine On
+    RewriteRule ^(.*)$ /music-platform3/public/stream.php?id=%{QUERY_STRING} [L,QSA]
+    # Fallback deny
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Cache static assets
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType audio/mpeg "access plus 1 hour"
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+Header always set Referrer-Policy strict-origin-when-cross-origin
+</IfModule>
+

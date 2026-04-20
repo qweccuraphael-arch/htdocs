@@ -11,9 +11,9 @@ function startSession() {
         session_set_cookie_params([
             'lifetime' => SESSION_LIFETIME,
             'path'     => '/',
-            'secure'   => false,
+            'secure'   => true,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => 'Strict',
         ]);
         session_start();
     }
@@ -258,4 +258,3 @@ function artistResetPassword(int $artistId, string $newPassword): bool {
     return true;
 }
 ?>
-

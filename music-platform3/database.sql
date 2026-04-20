@@ -114,6 +114,7 @@ CREATE TABLE IF NOT EXISTS earnings (
   artist_id  INT UNSIGNED   NOT NULL,
   song_id    INT UNSIGNED   NOT NULL,
   amount     DECIMAL(10,4)  NOT NULL DEFAULT 0.0000,
+  beneficiary_type ENUM('artist','admin') NOT NULL DEFAULT 'artist',
   type       ENUM('download','bonus','manual') NOT NULL DEFAULT 'download',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE,
@@ -121,7 +122,8 @@ CREATE TABLE IF NOT EXISTS earnings (
   INDEX idx_artist  (artist_id),
   INDEX idx_song    (song_id),
   INDEX idx_created (created_at),
-  INDEX idx_month   (artist_id, created_at)
+  INDEX idx_month   (artist_id, created_at),
+  INDEX idx_beneficiary (beneficiary_type, created_at)
 ) ENGINE=InnoDB;
 
 -- ── Useful views ─────────────────────────────────────────────
@@ -151,4 +153,3 @@ FROM songs s
 JOIN artists a ON s.artist_id = a.id
 WHERE s.status = 'approved'
 ORDER BY s.download_count DESC;
-
