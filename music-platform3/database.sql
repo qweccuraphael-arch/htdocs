@@ -25,6 +25,20 @@ VALUES ('admin',
         '$2y$12$92TN.Q5QpxQjqV8wRkVvEe6iF0YRuqN/zJkpJqKa5HgNcIPd02dbu',
         'admin@yourdomain.com');
 
+-- ── Admin Password Reset Tokens ──────────────────────────────
+CREATE TABLE IF NOT EXISTS admin_reset_tokens (
+  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  admin_id   INT UNSIGNED NOT NULL,
+  token      VARCHAR(64)  NOT NULL UNIQUE,
+  expires_at DATETIME     NOT NULL,
+  used_at    DATETIME     NULL,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE,
+  INDEX idx_token (token),
+  INDEX idx_expires (expires_at),
+  INDEX idx_used (used_at)
+) ENGINE=InnoDB;
+
 -- ── Artists ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS artists (
   id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -38,6 +52,20 @@ CREATE TABLE IF NOT EXISTS artists (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_email (email),
   INDEX idx_status (status)
+) ENGINE=InnoDB;
+
+-- ── Artist Password Reset Tokens ─────────────────────────────
+CREATE TABLE IF NOT EXISTS artist_reset_tokens (
+  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  artist_id  INT UNSIGNED NOT NULL,
+  token      VARCHAR(64)  NOT NULL UNIQUE,
+  expires_at DATETIME     NOT NULL,
+  used_at    DATETIME     NULL,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE,
+  INDEX idx_token (token),
+  INDEX idx_expires (expires_at),
+  INDEX idx_used (used_at)
 ) ENGINE=InnoDB;
 
 -- ── Songs ────────────────────────────────────────────────────
@@ -123,3 +151,4 @@ FROM songs s
 JOIN artists a ON s.artist_id = a.id
 WHERE s.status = 'approved'
 ORDER BY s.download_count DESC;
+

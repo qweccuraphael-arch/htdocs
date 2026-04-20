@@ -39,6 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="form-group"><label class="form-label">Password</label><input name="password" type="password" class="form-control" required></div>
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px">Sign In</button>
     </form>
+    <div style="margin-top:20px;text-align:center;font-size:12px;border-top:1px solid #eee;padding-top:16px">
+      <a href="forgot-password.php" style="color:var(--gold);text-decoration:none;font-weight:500;">Forgot Password?</a>
+    </div>
 
     <!-- REGISTER -->
     <form method="POST" id="form-register" style="display:none" enctype="multipart/form-data">
