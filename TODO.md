@@ -1,13 +1,24 @@
- # Music Platform 3 Progress
-in the after ttry
-## Completed
-- [x] Fix getDB() error
-- [x] Add online music player/streaming
+# Fix Rate Limiting for Account Recovery
 
-## Steps
-1. [x] Secure stream endpoint (public/stream.php)
-2. [x] Global JS player in main.js
-3. [x] Update index.php song rows with play buttons
-4. [x] Player CSS + .htaccess protection
-5. [ ] Test DB import/playback
-6. [ ] Add play_count DB column/logic
+## Status: [ ] In Progress
+
+### Step 1: Create this TODO.md ✅
+
+### Step 2: [ ] Increase rate limits in forgot-password.php files
+- Edit `music-platform3/artist/forgot-password.php`: 3,3600 → 20,14400
+- Edit `music-platform3/admin/forgot-password.php`: 3,3600 → 20,14400
+
+### Step 3: [ ] Clear all existing rate-limit files
+- Run: `rm c:/xampp/htdocs/music-platform3/storage/logs/ratelimit_*.json`
+
+### Step 4: [ ] Test recovery flows
+- Visit artist/admin forgot-password.php
+- Send multiple requests → no block
+
+### Step 5: [ ] Mark complete + cleanup TODO.md
+
+**Notes:**
+- Allows 20 requests / 4 hours per IP
+- Files auto-cleaned by cron >1hr daily
+- For production: Add CAPTCHA after 10 attempts
+
