@@ -10,8 +10,7 @@ A full-featured music download platform with artist portal, admin dashboard, AdS
 ```sql
 mysql -u root -p < database.sql
 ```
-Default admin login: **username:** `admin` | **password:** `Admin@2025`
-> ⚠️ Change this immediately after first login!
+
 
 ### 2. Configuration
 

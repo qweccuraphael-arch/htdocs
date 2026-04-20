@@ -1,4 +1,4 @@
-<?php
+onlinesic <?php
 require_once dirname(__DIR__) . '/config/app.php';
 require_once dirname(__DIR__) . '/app/helpers/auth.php';
 require_once dirname(__DIR__) . '/app/controllers/ArtistController.php';
@@ -38,8 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="form-group"><label class="form-label">Email</label><input name="email" type="email" class="form-control" required></div>
       <div class="form-group"><label class="form-label">Password</label><input name="password" type="password" class="form-control" required></div>
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px">Sign In</button>
-    </form>
+      <div style="margin-top:16px;text-align:center;font-size:13px;">
+        <a href="forgot-password.php" style="color:var(--gold);">Forgot Password?</a>
 
+    </form>
     <!-- REGISTER -->
     <form method="POST" id="form-register" style="display:none" enctype="multipart/form-data">
       <input type="hidden" name="tab" value="register">

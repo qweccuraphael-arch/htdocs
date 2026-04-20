@@ -46,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px">Sign In</button>
     </form>
     <div style="margin-top:20px; text-align:center; border-top:1px solid #eee; padding-top:20px;">
+        <a href="forgot-password.php" style="color:var(--gold); text-decoration:none; font-weight:500; display:block; margin-bottom:10px;">🔐 Forgot Password?</a>
         <a href="?bypass=1" class="btn" style="background:#4caf50; color:#fff; width:100%; justify-content:center;">🚀 Easy Access (No Password)</a>
     </div>
   </div>

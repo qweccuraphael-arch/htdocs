@@ -9,6 +9,22 @@ CREATE DATABASE IF NOT EXISTS music_platform
 
 USE music_platform;
 
+-- ── Streams ─────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS streams (
+  id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  song_id    INT UNSIGNED NOT NULL,
+  artist_id  INT UNSIGNED NOT NULL,
+  ip_address VARCHAR(45)  NOT NULL,
+  user_agent VARCHAR(255) DEFAULT NULL,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (song_id)   REFERENCES songs(id)   ON DELETE CASCADE,
+  FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE,
+  INDEX idx_song      (song_id),
+  INDEX idx_artist    (artist_id),
+  INDEX idx_created   (created_at),
+  INDEX idx_date_only ((DATE(created_at)))
+) ENGINE=InnoDB;
+
 -- ── Admins ───────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS admins (
   id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -24,6 +40,38 @@ INSERT INTO admins (username, password, email)
 VALUES ('admin',
         '$2y$12$/OUMWaVE7jsMyylRQwmy6.ddzMjONJnYV7Iahqxr2UhJPl2Rh5Uk2',
         'admin@yourdomain.com');
+
+-- ── Admin Password Reset Tokens ──────────────────────────────
+CREATE TABLE IF NOT EXISTS admin_reset_tokens (
+  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  admin_id   INT UNSIGNED NOT NULL,
+  token      VARCHAR(64)  NOT NULL UNIQUE,
+  expires_at DATETIME     NOT NULL,
+  used_at    DATETIME     NULL,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE,
+  INDEX idx_token (token),
+  INDEX idx_expires (expires_at),
+  INDEX idx_used (used_at)
+) ENGINE=InnoDB;
+
+-- ── Artist Password Reset Tokens ─────────────────────────────
+CREATE TABLE IF NOT EXISTS artist_reset_tokens (
+  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  artist_id  INT UNSIGNED NOT NULL,
+  token      VARCHAR(64)  NOT NULL UNIQUE,
+  expires_at DATETIME     NOT NULL,
+  used_at    DATETIME     NULL,
+  created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE,
+  INDEX idx_token (token),
+  INDEX idx_expires (expires_at),
+  INDEX idx_used (used_at)
+) ENGINE=InnoDB;
+
+-- Clean expired tokens (cron):
+-- DELETE FROM admin_reset_tokens WHERE expires_at < NOW();
+-- DELETE FROM artist_reset_tokens WHERE expires_at < NOW();
 
 -- ── Artists ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS artists (
@@ -151,3 +199,5 @@ FROM songs s
 JOIN artists a ON s.artist_id = a.id
 WHERE s.status = 'approved'
 ORDER BY s.download_count DESC;
+
+
