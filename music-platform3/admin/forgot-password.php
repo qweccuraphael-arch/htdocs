@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrf_token = $_POST['csrf_token'] ?? '';
     if (!verifyToken($csrf_token)) {
         $error = 'Invalid security token.';
-    } elseif (!rateLimitCheck('admin_forgot_' . getClientIP(), 3, 3600)) {
+    } elseif (!rateLimitCheck('admin_forgot_' . getClientIP(), 20, 14400)) { // Increased for recovery: 20/4hrs
         $error = 'Too many requests. Wait 1 hour.';
     } else {
         $identifier = sanitize($_POST['identifier'] ?? '');
