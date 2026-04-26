@@ -2,7 +2,7 @@
 // app/helpers/security.php
 
 function sanitize(string $input): string {
-    return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
+    return strip_tags(trim($input));
 }
 
 function generateToken(): string {
@@ -34,10 +34,7 @@ function isValidMimeType(string $filePath, array $allowed): bool {
     return in_array($mime, $allowed, true);
 }
 
-function safeFilename(string $name): string {
-    $name = preg_replace('/[^a-zA-Z0-9._-]/', '_', $name);
-    return strtolower(substr($name, 0, 200));
-}
+require_once __DIR__ . '/safeFilename.php';
 
 function rateLimitCheck(string $key, int $maxAttempts = 5, int $window = 300): bool {
     $cacheFile = LOG_PATH . 'ratelimit_' . md5($key) . '.json';

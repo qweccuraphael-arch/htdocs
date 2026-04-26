@@ -9,14 +9,19 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $u = sanitize($_POST['username'] ?? '');
     $p = $_POST['password'] ?? '';
-    $stmt = getDB()->prepare("SELECT * FROM admins WHERE username = ?");
-    $stmt->execute([$u]);
+    
+    // Allow login by username OR email
+    $stmt = getDB()->prepare("SELECT * FROM admins WHERE username = ? OR email = ?");
+    $stmt->execute([$u, $u]);
     $admin = $stmt->fetch();
+    
     if ($admin && password_verify($p, $admin['password'])) {
         adminLogin($admin['id'], $admin['username']);
-        header('Location: index.php'); exit;
+        header('Location: index.php'); 
+        exit;
     }
-    $error = 'Invalid username or password.';
+    $error = 'Invalid username/email or password.';
+    logActivity('admin_login_failed', "Failed login attempt for: $u");
 }
 ?><!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">

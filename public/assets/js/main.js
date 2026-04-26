@@ -1,5 +1,15 @@
 'use strict';
 
+// Mobile Sidebar Toggle
+document.addEventListener('click', e => {
+  const toggle = e.target.closest('.panel-toggle');
+  if (toggle) {
+    document.querySelector('.panel-sidebar')?.classList.toggle('active');
+  } else if (!e.target.closest('.panel-sidebar')) {
+    document.querySelector('.panel-sidebar')?.classList.remove('active');
+  }
+});
+
 // Existing animations
 document.querySelectorAll('.song-row,.featured-card').forEach((el,i)=>{
   el.style.cssText='opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease';

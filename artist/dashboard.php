@@ -11,6 +11,7 @@ requireArtist();
 $artistId      = currentArtistId();
 $artistName    = currentArtistName();
 $artistModel   = new Artist();
+$artist        = $artistModel->getById($artistId);
 $earningsModel = new Earnings();
 $downloadModel = new Download();
 $songModel     = new Song();
@@ -33,6 +34,28 @@ $pendingCount = count(array_filter($mySongs, fn($s) => $s['status'] === 'pending
   <?php include '_sidebar.php'; ?>
   <main class="panel-main">
     <h1 class="panel-title">👋 Welcome, <?=htmlspecialchars($artistName)?></h1>
+
+    <?php if ($artist['kyc_status'] !== 'approved'): ?>
+    <div style="background:rgba(212,175,55,.1);border:1px solid var(--gold);padding:20px;border-radius:16px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+      <div>
+        <h3 style="font-family:var(--font-head);margin:0 0 4px;font-size:16px;color:var(--gold)">🏢 Business Verification Needed</h3>
+        <p style="margin:0;font-size:13px;color:var(--text-muted)">
+          <?php if($artist['kyc_status'] === 'none'): ?>
+            Please upload your business documents to verify your account and enable all features.
+          <?php elseif($artist['kyc_status'] === 'pending'): ?>
+            Your verification documents are currently under review.
+          <?php elseif($artist['kyc_status'] === 'rejected'): ?>
+            Your verification was rejected. Please review and resubmit your documents.
+          <?php endif; ?>
+        </p>
+      </div>
+      <?php if($artist['kyc_status'] !== 'pending'): ?>
+      <a href="kyc.php" class="btn btn-primary">Complete Verification</a>
+      <?php else: ?>
+      <span class="badge badge-pending">Under Review</span>
+      <?php endif; ?>
+    </div>
+    <?php endif; ?>
 
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-icon">🎵</div><div class="stat-value"><?=number_format($stats['total_songs']??0)?></div><div class="stat-label">Songs Uploaded</div></div>

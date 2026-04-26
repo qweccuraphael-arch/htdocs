@@ -11,17 +11,17 @@ class Earnings {
         $this->db = getDB();
     }
 
-    public function record(int $artistId, int $songId, float $amount, string $type = 'download'): int {
+    public function record(int $artistId, int $songId, float $amount, string $type = 'download', string $beneficiary = 'artist'): int {
         $stmt = $this->db->prepare(
-            "INSERT INTO earnings (artist_id, song_id, amount, type, created_at)
-             VALUES (?, ?, ?, ?, NOW())"
+            "INSERT INTO earnings (artist_id, song_id, amount, type, beneficiary_type, created_at)
+             VALUES (?, ?, ?, ?, ?, NOW())"
         );
-        $stmt->execute([$artistId, $songId, $amount, $type]);
+        $stmt->execute([$artistId, $songId, $amount, $type, $beneficiary]);
         return (int) $this->db->lastInsertId();
     }
 
     public function getByArtist(int $artistId, string $period = 'all'): array {
-        $where = 'WHERE e.artist_id = ?';
+        $where = "WHERE e.artist_id = ? AND e.beneficiary_type = 'artist'";
         if ($period === 'month')  $where .= ' AND MONTH(e.created_at) = MONTH(NOW()) AND YEAR(e.created_at) = YEAR(NOW())';
         if ($period === 'week')   $where .= ' AND e.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)';
         if ($period === 'today')  $where .= ' AND DATE(e.created_at) = CURDATE()';
@@ -35,7 +35,7 @@ class Earnings {
     }
 
     public function totalByArtist(int $artistId, string $period = 'all'): float {
-        $where = 'WHERE artist_id = ?';
+        $where = "WHERE artist_id = ? AND beneficiary_type = 'artist'";
         if ($period === 'month') $where .= ' AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())';
         if ($period === 'week')  $where .= ' AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)';
         if ($period === 'today') $where .= ' AND DATE(created_at) = CURDATE()';
@@ -48,7 +48,7 @@ class Earnings {
     public function getMonthlyChart(int $artistId): array {
         $stmt = $this->db->prepare(
             "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, SUM(amount) AS total
-             FROM earnings WHERE artist_id = ?
+             FROM earnings WHERE artist_id = ? AND beneficiary_type = 'artist'
              GROUP BY month ORDER BY month DESC LIMIT 12"
         );
         $stmt->execute([$artistId]);
@@ -71,5 +71,9 @@ class Earnings {
 
     public function platformTotal(): float {
         return (float) $this->db->query("SELECT COALESCE(SUM(amount),0) FROM earnings")->fetchColumn();
+    }
+
+    public function adminTotal(): float {
+        return (float) $this->db->query("SELECT COALESCE(SUM(amount),0) FROM earnings WHERE beneficiary_type = 'admin'")->fetchColumn();
     }
 }

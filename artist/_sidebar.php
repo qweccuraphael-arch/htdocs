@@ -2,6 +2,10 @@
 require_once dirname(__DIR__) . '/app/helpers/auth.php';
 $current = basename($_SERVER['PHP_SELF']);
 ?>
+<header class="mobile-panel-header">
+  <a href="dashboard.php" class="logo">🎵 BeatWave</a>
+  <button class="panel-toggle">☰</button>
+</header>
 <aside class="panel-sidebar">
   <a href="dashboard.php" class="panel-logo">🎤 Artist Panel</a>
   <nav class="panel-nav">

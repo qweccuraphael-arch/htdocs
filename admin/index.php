@@ -17,6 +17,7 @@ $totalSongs     = count($songModel->getAllAdmin());
 $totalArtists   = count($artistModel->getAll());
 $totalDownloads = $downloadModel->countTotal();
 $totalEarnings  = $earningsModel->platformTotal();
+$adminEarnings  = $earningsModel->adminTotal();
 $pendingSongs   = count($songModel->getAllAdmin('pending'));
 $todayDownloads = $downloadModel->countToday();
 $recentSongs    = array_slice($songModel->getAllAdmin(), 0, 5);
@@ -36,9 +37,9 @@ $downloadChart  = $downloadModel->getStatsAdmin();
       <div class="stat-card"><div class="stat-icon">🎵</div><div class="stat-value"><?=number_format($totalSongs)?></div><div class="stat-label">Total Songs</div></div>
       <div class="stat-card"><div class="stat-icon">🎤</div><div class="stat-value"><?=number_format($totalArtists)?></div><div class="stat-label">Artists</div></div>
       <div class="stat-card"><div class="stat-icon">⬇</div><div class="stat-value"><?=formatNumber($totalDownloads)?></div><div class="stat-label">Total Downloads</div></div>
-      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value"><?=formatMoney($totalEarnings)?></div><div class="stat-label">Platform Earnings</div></div>
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value"><?=formatMoney($totalEarnings)?></div><div class="stat-label">Gross Revenue</div></div>
+      <div class="stat-card"><div class="stat-icon">🏦</div><div class="stat-value" style="color:var(--gold)"><?=formatMoney($adminEarnings)?></div><div class="stat-label">Admin Profit (Net)</div></div>
       <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" style="color:#ffc107"><?=number_format($pendingSongs)?></div><div class="stat-label">Pending Approval</div></div>
-      <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value"><?=number_format($todayDownloads)?></div><div class="stat-label">Downloads Today</div></div>
     </div>
 
     <?php if($pendingSongs > 0):?>

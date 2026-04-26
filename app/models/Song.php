@@ -19,21 +19,24 @@ class Song {
         $params = [];
         
         if ($search !== '') {
-            $sql .= " AND (s.title LIKE ? OR a.name LIKE ?)";
-            $params[] = "%{$search}%";
-            $params[] = "%{$search}%";
+            $sql .= " AND (s.title LIKE :search1 OR a.name LIKE :search2)";
+            $params[':search1'] = "%{$search}%";
+            $params[':search2'] = "%{$search}%";
         }
         if ($genre !== '') {
-            $sql .= " AND s.genre = ?";
-            $params[] = $genre;
+            $sql .= " AND s.genre = :genre";
+            $params[':genre'] = $genre;
         }
         
-        $sql .= " ORDER BY s.created_at DESC LIMIT ? OFFSET ?";
-        $params[] = $limit;
-        $params[] = $offset;
+        $sql .= " ORDER BY s.created_at DESC LIMIT :limit OFFSET :offset";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

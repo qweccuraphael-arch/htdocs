@@ -85,7 +85,7 @@ Ghana phone numbers (format `024XXXXXXX`) are **auto-converted** to internationa
 
 ## 💰 Earnings
 
-- Artists earn **GHS 0.05 per download** (change `EARNINGS_PER_DOWNLOAD` in `config/app.php`)
+- Artists earn **GHS 1.50 per download** (change `EARNINGS_PER_DOWNLOAD` in `config/app.php`)
 - Earnings are recorded automatically on every download
 - Monthly reports sent via cron job
 

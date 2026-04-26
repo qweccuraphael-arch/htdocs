@@ -8,8 +8,8 @@ require_once dirname(__DIR__) . '/app/helpers/functions.php';
 
 $songModel = new Song();
 $page      = max(1, (int)($_GET['page'] ?? 1));
-$search    = htmlspecialchars($_GET['q'] ?? '');
-$genre     = htmlspecialchars($_GET['genre'] ?? '');
+$search    = $_GET['q'] ?? '';
+$genre     = $_GET['genre'] ?? '';
 
 $songs    = $songModel->getAll($page, SONGS_PER_PAGE, $search, $genre);
 $total    = $songModel->countAll($search, $genre);
@@ -36,7 +36,7 @@ $featured = $songModel->getFeatured(6);
   <div class="container header-inner">
     <a href="index.php" class="logo">🎵 BeatWave</a>
     <form class="search-bar" method="GET" action="index.php">
-      <input type="text" name="q" placeholder="Search songs, artists…" value="<?= $search ?>">
+      <input type="text" name="q" placeholder="Search songs, artists…" value="<?= htmlspecialchars($search) ?>">
       <button type="submit">Search</button>
     </form>
     <nav class="nav-links">

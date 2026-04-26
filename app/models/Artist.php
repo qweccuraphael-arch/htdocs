@@ -22,6 +22,12 @@ class Artist {
         return $stmt->fetch() ?: null;
     }
 
+    public function getByGoogleId(string $googleId): ?array {
+        $stmt = $this->db->prepare("SELECT * FROM artists WHERE google_id = ?");
+        $stmt->execute([$googleId]);
+        return $stmt->fetch() ?: null;
+    }
+
     public function getAll(): array {
         return $this->db->query("SELECT * FROM artists ORDER BY created_at DESC")->fetchAll();
     }
@@ -29,13 +35,26 @@ class Artist {
     public function create(array $data): int {
         $data['password']   = password_hash($data['password'], PASSWORD_BCRYPT);
         $data['created_at'] = date('Y-m-d H:i:s');
+        $data['is_verified'] = $data['is_verified'] ?? 0;
+        $data['otp_code']    = $data['otp_code'] ?? null;
+        $data['google_id']   = $data['google_id'] ?? null;
 
         $stmt = $this->db->prepare(
-            "INSERT INTO artists (name, email, password, phone, bio, photo, status, created_at)
-             VALUES (:name, :email, :password, :phone, :bio, :photo, 'active', :created_at)"
+            "INSERT INTO artists (name, email, google_id, password, otp_code, is_verified, phone, bio, photo, status, created_at)
+             VALUES (:name, :email, :google_id, :password, :otp_code, :is_verified, :phone, :bio, :photo, 'active', :created_at)"
         );
         $stmt->execute($data);
         return (int) $this->db->lastInsertId();
+    }
+
+    public function verifyEmail(int $id): bool {
+        $stmt = $this->db->prepare("UPDATE artists SET is_verified = 1, otp_code = NULL WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public function updateOTP(int $id, string $otp): bool {
+        $stmt = $this->db->prepare("UPDATE artists SET otp_code = ? WHERE id = ?");
+        return $stmt->execute([$otp, $id]);
     }
 
     public function verifyLogin(string $email, string $password): ?array {

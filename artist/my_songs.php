@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action']??'') === 'delete'
 <div class="panel-layout">
   <?php include '_sidebar.php'; ?>
   <main class="panel-main">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-      <h1 class="panel-title" style="margin-bottom:0">🎵 My Songs</h1>
+    <div class="panel-title">
+      <h1 style="margin-bottom:0;font-size:inherit">🎵 My Songs</h1>
       <a href="upload.php" class="btn btn-primary">⬆ Upload New</a>
     </div>
 

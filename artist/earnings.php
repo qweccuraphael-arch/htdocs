@@ -52,6 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'reque
             if ($resp['status']) {
                 $payoutModel->updateStatus($reference, 'processing', $resp['data']['transfer_code']);
                 $msg = '✅ Payout initiated! It will be processed shortly.';
+                
+                // Send Notifications
+                if (!empty($artist['phone'])) {
+                    sendSMS($artist['phone'], "You withdrew GHS " . number_format($amount, 2) . ". If not you, contact support immediately. - Beatwave");
+                }
+                sendWithdrawalEmail($artist['email'], $artist['name'], $amount, $reference);
             } else {
                 $payoutModel->updateStatus($reference, 'failed');
                 $err = '❌ Paystack Error: ' . ($resp['message'] ?? 'Unknown error');
@@ -91,7 +97,7 @@ $chart   = $earningsModel->getMonthlyChart($artistId);
     <?php if($err):?><div class="form-error" style="padding:12px;background:rgba(244,67,54,.1);border-radius:8px;margin-bottom:16px;color:#f44336"><?=$err?></div><?php endif;?>
 
     <!-- Balance & Withdrawal -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:28px">
+    <div class="earnings-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:28px">
       <div style="background:linear-gradient(135deg,#d4af37,#f5c842);padding:24px;border-radius:16px;color:#000">
         <div style="font-size:14px;font-weight:500;opacity:.8">Current Balance</div>
         <div style="font-size:36px;font-weight:800;margin:8px 0"><?=formatMoney($currentBalance)?></div>

@@ -1,4 +1,4 @@
-u<?php
+<?php
 // Secure audio streaming endpoint with range requests (MP3 partial content)
 require_once dirname(__DIR__) . '/config/db.php';
 require_once dirname(__DIR__) . '/app/models/Song.php';

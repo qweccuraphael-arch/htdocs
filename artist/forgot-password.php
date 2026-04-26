@@ -45,7 +45,7 @@ $csrf = setCSRF();
     
     <?php if ($message): ?>
       <p class="form-success" style="background:rgba(76,175,80,.1);border-left:4px solid #4caf50;padding:12px;border-radius:8px;">
-        <?= htmlspecialchars($message) ?>
+        <?= $message ?>
       </p>
       <div style="text-align:center">
         <a href="login.php" class="btn btn-primary">Back to Login</a>

@@ -80,24 +80,124 @@ function sendEmail(string $to, string $subject, string $body, string $plain = ''
         $plain = strip_tags($body);
     }
 
+    $host = SMTP_HOST;
+    $port = SMTP_PORT;
+    $user = SMTP_USER;
+    $pass = SMTP_PASS;
+    $timeout = 10;
+
+    // 1. DNS check - if it fails, we know we can't connect to SMTP_HOST
+    if (gethostbyname($host) === $host && !filter_var($host, FILTER_VALIDATE_IP)) {
+        logActivity('email_error', "DNS resolution failed for $host. Falling back to mail().");
+        return _mailFallback($to, $subject, $body, $plain);
+    }
+
+    // 2. Try SMTP
+    $socket = @fsockopen(($port == 465 ? 'ssl://' : '') . $host, $port, $errno, $errstr, $timeout);
+    if (!$socket) {
+        logActivity('email_error', "SMTP Socket Error: $errstr ($errno). Falling back to mail().");
+        return _mailFallback($to, $subject, $body, $plain);
+    }
+
+    function get_response($socket) {
+        $res = "";
+        while ($str = fgets($socket, 515)) {
+            $res .= $str;
+            if (substr($str, 3, 1) == " ") break;
+        }
+        return $res;
+    }
+
+    try {
+        get_response($socket);
+        fwrite($socket, "EHLO " . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\r\n");
+        get_response($socket);
+
+        if ($port == 587) {
+            fwrite($socket, "STARTTLS\r\n");
+            $tls_res = get_response($socket);
+            if (substr($tls_res, 0, 3) != "220") {
+                throw new Exception("STARTTLS failed: $tls_res");
+            }
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new Exception("TLS encryption failed");
+            }
+            fwrite($socket, "EHLO " . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\r\n");
+            get_response($socket);
+        }
+
+        fwrite($socket, "AUTH LOGIN\r\n");
+        get_response($socket);
+        fwrite($socket, base64_encode($user) . "\r\n");
+        get_response($socket);
+        fwrite($socket, base64_encode($pass) . "\r\n");
+        $login_res = get_response($socket);
+
+        if (substr($login_res, 0, 3) != "235") {
+            throw new Exception("SMTP Login Failed: $login_res");
+        }
+
+        fwrite($socket, "MAIL FROM: <$user>\r\n");
+        get_response($socket);
+        fwrite($socket, "RCPT TO: <$to>\r\n");
+        get_response($socket);
+        fwrite($socket, "DATA\r\n");
+        get_response($socket);
+
+        $boundary = md5(uniqid());
+        $headers  = "From: " . MAIL_FROM_NAME . " <$user>\r\n";
+        $headers .= "To: <$to>\r\n";
+        $headers .= "Subject: $subject\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
+        $headers .= "X-Mailer: BeatWave-SMTP\r\n";
+
+        $message  = "$headers\r\n";
+        $message .= "--$boundary\r\n";
+        $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $message .= "Content-Transfer-Encoding: 8bit\r\n\r\n$plain\r\n\r\n";
+        $message .= "--$boundary\r\n";
+        $message .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $message .= "Content-Transfer-Encoding: 8bit\r\n\r\n$body\r\n\r\n";
+        $message .= "--$boundary--\r\n.\r\n";
+
+        fwrite($socket, $message);
+        $send_res = get_response($socket);
+        fwrite($socket, "QUIT\r\n");
+        fclose($socket);
+
+        $success = (substr($send_res, 0, 3) == "250");
+        logActivity('email', $success ? 'Sent via SMTP' : 'SMTP Send Failed', ['to' => $to, 'res' => $send_res]);
+        return $success;
+
+    } catch (Exception $e) {
+        logActivity('email_error', "SMTP Exception: " . $e->getMessage() . ". Trying mail().");
+        if (is_resource($socket)) fclose($socket);
+        return _mailFallback($to, $subject, $body, $plain);
+    }
+}
+
+/**
+ * Fallback to PHP's built-in mail() function
+ */
+function _mailFallback(string $to, string $subject, string $body, string $plain = ''): bool {
     $boundary = md5(uniqid());
-    $headers  = implode("\r\n", [
-        'From: ' . MAIL_FROM_NAME . ' <' . MAIL_FROM . '>',
-        'Reply-To: ' . MAIL_FROM,
-        'MIME-Version: 1.0',
-        'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
-        'X-Mailer: PHP/' . PHP_VERSION,
-    ]);
+    $headers  = "From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
 
-    $message  = "--{$boundary}\r\n";
-    $message .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n{$plain}\r\n\r\n";
-    $message .= "--{$boundary}\r\n";
-    $message .= "Content-Type: text/html; charset=UTF-8\r\n\r\n{$body}\r\n\r\n";
-    $message .= "--{$boundary}--";
+    $message  = "--$boundary\r\n";
+    $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $message .= "Content-Transfer-Encoding: 8bit\r\n\r\n" . ($plain ?: strip_tags($body)) . "\r\n\r\n";
+    $message .= "--$boundary\r\n";
+    $message .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $message .= "Content-Transfer-Encoding: 8bit\r\n\r\n$body\r\n\r\n";
+    $message .= "--$boundary--";
 
-    $result = @mail($to, $subject, $message, $headers);
-    logActivity('email', $result ? 'Sent' : 'Failed', ['to' => $to, 'subject' => $subject]);
-    return $result;
+    $success = @mail($to, $subject, $message, $headers);
+    logActivity('email', $success ? 'Sent via mail()' : 'mail() failed', ['to' => $to]);
+    return $success;
 }
 
 // ── Pre-built email templates ─────────────────────────────────────────────────
@@ -140,13 +240,31 @@ HTML;
 // Specific email senders
 function sendWelcomeEmail(string $to, string $artistName): bool {
     $content = emailTemplate(
-        "Welcome to BeatWave, {$artistName}!",
-        "<p>Your artist account has been created. You can now upload songs, track downloads, and earn from your music.</p>
-         <p><a href='" . APP_URL . "/artist/dashboard.php' class='btn'>Go to Dashboard</a></p>
-         <p>If you have questions, reach us at <span class='highlight'>support@yourdomain.com</span></p>"
+        "Welcome to Beatwave",
+        "<p>Your account is ready.</p>"
     );
-    $content = str_replace('{$_year}', date('Y'), $content);
-    return sendEmail($to, 'Welcome to BeatWave 🎵', $content);
+    return sendEmail($to, 'Welcome to Beatwave', $content);
+}
+
+function sendOTPEmail(string $to, string $artistName, string $otp): bool {
+    $content = emailTemplate(
+        "Verify Your Account - Beatwave",
+        "<p>Hi <strong>{$artistName}</strong>,</p>
+         <p>Use the code below to verify your account:</p>
+         <div style='background:#1a1a1a;border:1px dashed #d4af37;padding:20px;text-align:center;font-size:32px;letter-spacing:10px;color:#d4af37;font-weight:bold;margin:20px 0'>
+           {$otp}
+         </div>"
+    );
+    return sendEmail($to, "🔐 Beatwave OTP: {$otp}", $content);
+}
+
+function sendWithdrawalEmail(string $to, string $artistName, float $amount, string $reference): bool {
+    $content = emailTemplate(
+        "Withdrawal Alert - Beatwave",
+        "<p>You withdrew GHS " . number_format($amount, 2) . ". If not you, contact support immediately.</p>
+         <p><strong>Reference:</strong> <code>{$reference}</code></p>"
+    );
+    return sendEmail($to, "Withdrawal Alert - Beatwave", $content);
 }
 
 function sendSongApprovedEmail(string $to, string $artistName, string $songTitle): bool {
@@ -214,16 +332,20 @@ function sendSMS(string $phone, string $message): array {
 }
 
 function _smsArkesel(string $phone, string $message): array {
-    $payload = json_encode([
-        'sender'     => SMS_SENDER_ID,
+    // Note: Some Arkesel accounts require Sender ID registration.
+    // If you get 'Sender ID not allowed', try empty sender for generic ID or your verified name.
+    $sender = SMS_SENDER_ID;
+    
+    $payload = [
+        'sender'     => $sender,
         'message'    => $message,
         'recipients' => [$phone],
-    ]);
+    ];
 
     $ch = curl_init(ARKESEL_SMS_URL);
     curl_setopt_array($ch, [
         CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_POSTFIELDS     => json_encode($payload),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER     => [
             'api-key: ' . SMS_API_KEY,
@@ -242,6 +364,27 @@ function _smsArkesel(string $phone, string $message): array {
 
     $data    = json_decode($response, true);
     $success = isset($data['status']) && strtolower($data['status']) === 'success';
+    
+    // Fallback attempt if sender ID is the issue
+    if (!$success && isset($data['message']) && (str_contains($data['message'], 'Sender ID') || str_contains($data['message'], 'sender field'))) {
+        $payload['sender'] = 'Beatwave'; // Force a default instead of empty
+        $ch = curl_init(ARKESEL_SMS_URL);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($payload),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'api-key: ' . SMS_API_KEY,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_TIMEOUT        => 10,
+        ]);
+        $response = curl_exec($ch);
+        $data = json_decode($response, true);
+        $success = isset($data['status']) && strtolower($data['status']) === 'success';
+        curl_close($ch);
+    }
+
     logActivity('sms', $success ? 'Sent via Arkesel' : 'Arkesel failed', ['phone' => $phone, 'resp' => $data]);
     return ['success' => $success, 'response' => $data];
 }

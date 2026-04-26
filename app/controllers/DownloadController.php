@@ -49,12 +49,22 @@ class DownloadController {
         // Increment counter
         $this->songModel->incrementDownload($songId);
 
-        // Record earnings
+        // Record Artist earnings
         $this->earningsModel->record(
             $song['artist_id'],
             $songId,
             EARNINGS_PER_DOWNLOAD,
-            'download'
+            'download',
+            'artist'
+        );
+
+        // Record Admin earnings
+        $this->earningsModel->record(
+            $song['artist_id'],
+            $songId,
+            ADMIN_EARNINGS_PER_DOWNLOAD,
+            'download',
+            'admin'
         );
 
         // Stream the file
